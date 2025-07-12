@@ -1,0 +1,65 @@
+body {
+      margin: 0;
+      background: #b3ecb3;
+      overflow: hidden;
+    }
+
+    #game {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: repeating-linear-gradient(#b3ecb3, #a3e1a3 10px);
+    }
+
+    #bunny, .carrot, .cabbage, .dandelion, .lily {
+      position: absolute;
+      width: 64px;
+      height: auto;
+      image-rendering: pixelated;
+      transition: transform 0.1s ease-out;
+    }
+
+    .carrot {
+      width: 32px;
+    }
+	
+	.cabbage {
+	  width: 32px;
+	} 
+	
+	.dandelion {
+	  width: 32px;
+	}
+	
+	.lily {
+	  width: 32px;
+	}
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-family: monospace;
+      font-size: 24px;
+      background: #fff8;
+      padding: 8px;
+      border-radius: 8px;
+    }
+	
+	#gate {
+      position: absolute;
+      width: 64px;
+      height: auto;
+      image-rendering: pixelated;
+    }
+	
+	#restart-btn {
+      position: absolute;
+      top: 600px;
+      left: 1300px;
+      font-family: monospace;
+      font-size: 24px;
+      background: #fff8;
+      padding: 8px;
+      border-radius: 8px;
+    }
