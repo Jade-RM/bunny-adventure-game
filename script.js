@@ -1,146 +1,429 @@
-  const bunny = document.getElementById('bunny');
-  const carrots = document.querySelectorAll('.carrot');
-  const cabbages = document.querySelectorAll('.cabbage');
-  const dandelions = document.querySelectorAll('.dandelion');
-  const lilies = document.querySelectorAll('.lily');
-  const scoreDisplay = document.getElementById('score');
-  const restart = document.getElementById('restart-btn');
-  let x = 50;
-  let y = 50;
-  bunny.style.left = x + 'px';
-  bunny.style.top = y + 'px';
-  const speed = 10;
-  let score = 0;
-  let gameOver = false;
+        // DOM Elements
+        const gameContainer = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score');
+        const restartBtn = document.getElementById('restart-btn');
+        const messageBox = document.getElementById('message-box');
 
-  function updateScore(amount) {
-    if (gameOver) return;
-    score += amount;
-    scoreDisplay.textContent = 'Score: ' + score;
+        // Initial references (will be updated when the level loads)
+        let bunny = document.getElementById('bunny');
+        let gate = document.getElementById('gate');
+        // These arrays store DOM elements for the collectibles in the current level
+        let currentCarrots = [];
+        let currentCabbages = [];
+        let currentDandelions = [];
+        let currentLilies = [];
+        let currentMushrooms = [];
 
-    if (score < 0) {
-      endGame();
-    }
-  }
+        // Variables for level index, bunny position and speed and score
+        let currentLevelIndex = 0; // Start at the first level (index 0)
+        let bunnyX = 50;
+        let bunnyY = 50;
+        let bunnySpeed = 10; // Changed to 'let' to allow modification
+        let score = 0;
+        let gameOver = false;
 
-  function endGame() {
-    gameOver = true;
-    scoreDisplay.textContent = 'Bunny has eaten too many poisonous plants! Game Over!';
-    bunny.style.filter = 'grayscale(100%)';
-  }
-  
-  document.addEventListener('keydown', (e) => {
-    if (gameOver) return;
+        // Variables for mushroom effect
+        let originalBunnyWidth = 64; // Store original bunny width
+        let originalBunnyHeight = 64; // Store original bunny height
+        let originalBunnySpeed = 10; // Store original bunny speed
+        let mushroomEffectTimer = null; // setTimeout ID
 
-    const keys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
-    if (!keys.includes(e.key)) return;
+        // Game boundaries within the container
+        let gameWidth = gameContainer.offsetWidth;
+        let gameHeight = gameContainer.offsetHeight;
 
-    if (e.key === 'ArrowRight') x += speed;
-    if (e.key === 'ArrowLeft') x -= speed;
-    if (e.key === 'ArrowDown') y += speed;
-    if (e.key === 'ArrowUp') y -= speed;
+        // Level data
+        const levels = [
+            {
+                name: "Level 1: The Sunny Meadow",
+                bunnyStart: { x: 50, y: 50 },
+                gatePosition: { x: 1100, y: 600 },
+                collectibles: {
+                    carrots: [
+                        { x: 600, y: 200 }, { x: 800, y: 200 }, { x: 600, y: 100 },
+                        { x: 800, y: 100 }, { x: 600, y: 10 }, { x: 300, y: 200 },
+                        { x: 500, y: 100 }, { x: 300, y: 100 }, { x: 600, y: 400 },
+                        { x: 900, y: 300 }, { x: 900, y: 100 }, { x: 500, y: 200 },
+                        { x: 300, y: 500 }, { x: 700, y: 200 }, { x: 500, y: 400 },
+                        { x: 800, y: 400 }, { x: 600, y: 500 }, { x: 300, y: 600 },
+                        { x: 500, y: 600 }, { x: 900, y: 600 }, { x: 900, y: 500 },
+                        { x: 300, y: 10 }, { x: 400, y: 300 }
+                    ],
+                    cabbages: [
+                        { x: 800, y: 10 }, { x: 500, y: 300 }, { x: 400, y: 100 },
+                        { x: 800, y: 300 }, { x: 700, y: 500 }, { x: 300, y: 400 },
+                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 },
+                        { x: 400, y: 600 }, { x: 400, y: 500 }, { x: 700, y: 300 }
+                    ],
+                    dandelions: [
+                        { x: 900, y: 10 }, { x: 700, y: 10 }, { x: 400, y: 200 },
+                        { x: 800, y: 500 }, { x: 600, y: 300 }, { x: 600, y: 600 },
+                        { x: 500, y: 500 }, { x: 900, y: 400 }
+                    ],
+                    lilies: [
+                        { x: 900, y: 200 }, { x: 400, y: 400 }, { x: 700, y: 100 },
+                        { x: 500, y: 10 }, { x: 800, y: 600 }, { x: 700, y: 600 }
+                    ],
+                    mushrooms: [] // No mushrooms in level 1
+                },
+                scoreToUnlockGate: 20,
+                backgroundStyle: 'repeating-linear-gradient(#b3ecb3, #a3e1a3 10px)'
+            },
+            {
+                name: "Level 2: The Mushroom Forest",
+                bunnyStart: { x: 50, y: 600 }, // Start at bottom left
+                gatePosition: { x: 1100, y: 50 }, // Gate at top right
+                collectibles: {
+                    carrots: [
+                        { x: 600, y: 200 }, { x: 800, y: 10 }, { x: 600, y: 100 },
+                        { x: 800, y: 100 }, { x: 600, y: 10 }, { x: 300, y: 200 },
+                        { x: 500, y: 100 }, { x: 700, y: 500 }, { x: 600, y: 400 },
+                        { x: 900, y: 300 }, { x: 900, y: 100 }, { x: 500, y: 200 },
+                        { x: 300, y: 500 }, { x: 700, y: 200 }, { x: 500, y: 400 },
+                        { x: 800, y: 400 }, { x: 600, y: 500 }, { x: 300, y: 600 },
+                        { x: 500, y: 600 }, { x: 900, y: 600 }, { x: 900, y: 500 },
+                        { x: 300, y: 10 }
+                    ],
+                    cabbages: [
+                        { x: 800, y: 200 }, { x: 500, y: 300 }, { x: 400, y: 100 },
+                        { x: 800, y: 300 }, { x: 400, y: 600 }, { x: 300, y: 400 },
+                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 }
+                    ],
+                    dandelions: [
+                        { x: 900, y: 10 }, { x: 700, y: 10 }, { x: 400, y: 200 },
+                        { x: 800, y: 500 }, { x: 600, y: 300 }, { x: 600, y: 600 },
+                        { x: 500, y: 500 }, { x: 900, y: 400 }
+                    ],
+                    lilies: [
+                        { x: 900, y: 200 }, { x: 400, y: 400 }, { x: 700, y: 100 },
+                        { x: 500, y: 10 }, { x: 800, y: 600 }, { x: 700, y: 600 }
+                    ],
+                    mushrooms: [
+                        { x: 700, y: 300 },
+                        { x: 400, y: 500 },
+                        { x: 400, y: 300 },
+						{ x: 300, y: 100 }
+                    ]
+                },
+                scoreToUnlockGate: 35,
+                backgroundStyle: 'repeating-linear-gradient(#b3ecb3, #a3e1a3 10px)' // Default green
+            },
+            {
+                name: "Level 3: The Snowy Mountain",
+                bunnyStart: { x: 50, y: 350 }, // Start in middle left
+                gatePosition: { x: 1100, y: 350 }, // Gate in middle right
+                collectibles: {
+                    carrots: [
+                        { x: 600, y: 200 }, { x: 800, y: 200 }, { x: 600, y: 100 },
+                        { x: 800, y: 100 }, { x: 600, y: 10 }, { x: 300, y: 200 },
+                        { x: 500, y: 100 }, { x: 300, y: 100 }, { x: 600, y: 400 },
+                        { x: 900, y: 300 }, { x: 900, y: 100 }, { x: 500, y: 200 },
+                        { x: 300, y: 500 }, { x: 700, y: 200 }, { x: 500, y: 400 },
+                        { x: 800, y: 400 }, { x: 600, y: 500 }, { x: 300, y: 600 },
+                        { x: 500, y: 600 }, { x: 900, y: 600 }, { x: 900, y: 500 },
+                        { x: 300, y: 10 }, { x: 400, y: 300 }
+                    ],
+                    cabbages: [
+                        { x: 800, y: 10 }, { x: 500, y: 300 }, { x: 400, y: 100 },
+                        { x: 800, y: 300 }, { x: 700, y: 500 }, { x: 300, y: 400 },
+                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 },
+                        { x: 400, y: 600 }, { x: 400, y: 500 }, { x: 700, y: 300 }
+                    ],
+                    dandelions: [
+                        { x: 900, y: 10 }, { x: 700, y: 10 }, { x: 400, y: 200 },
+                        { x: 800, y: 500 }, { x: 600, y: 300 }, { x: 600, y: 600 },
+                        { x: 500, y: 500 }, { x: 900, y: 400 }
+                    ],
+                    lilies: [
+                        { x: 900, y: 200 }, { x: 400, y: 400 }, { x: 700, y: 100 },
+                        { x: 500, y: 10 }, { x: 800, y: 600 }, { x: 700, y: 600 }
+                    ],
+                    mushrooms: [] // No mushrooms in level 3
+                },
+                scoreToUnlockGate: 50,
+                backgroundStyle: 'repeating-linear-gradient(#ffffff, #fffafa 10px)'
+            }
+        ];
 
-    x = Math.max(0, Math.min(window.innerWidth - 64, x));
-    y = Math.max(0, Math.min(window.innerHeight - 64, y));
+        // Game functions
 
-    bunny.style.left = x + 'px';
-    bunny.style.top = y + 'px';
-    bunny.style.transform = 'translateY(-10px)';
-    setTimeout(() => bunny.style.transform = 'translateY(0)', 100);
-
-      // Check for carrot collisions
-      carrots.forEach(carrot => {
-        const rect1 = bunny.getBoundingClientRect();
-        const rect2 = carrot.getBoundingClientRect();
-        const overlap = !(rect1.right < rect2.left || 
-                          rect1.left > rect2.right || 
-                          rect1.bottom < rect2.top || 
-                          rect1.top > rect2.bottom);
-        if (overlap && carrot.style.display !== 'none') {
-          carrot.style.display = 'none';
-          updateScore(+1)
+        // Function to show temporary messages (e.g., level start, game over)
+        function showMessage(msg, duration = 3000) {
+            messageBox.textContent = msg;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, duration);
         }
-      });
-	  
-	  // Check for cabbage collisions
-      cabbages.forEach(cabbage => {
-        const rect1 = bunny.getBoundingClientRect();
-        const rect2 = cabbage.getBoundingClientRect();
-        const overlap = !(rect1.right < rect2.left || 
-                          rect1.left > rect2.right || 
-                          rect1.bottom < rect2.top || 
-                          rect1.top > rect2.bottom);
-        if (overlap && cabbage.style.display !== 'none') {
-          cabbage.style.display = 'none';
-          updateScore(-1)
-        }
-      });
-	  // Check for dandelion collisions
-      dandelions.forEach(dandelion => {
-        const rect1 = bunny.getBoundingClientRect();
-        const rect2 = dandelion.getBoundingClientRect();
-        const overlap = !(rect1.right < rect2.left || 
-                          rect1.left > rect2.right || 
-                          rect1.bottom < rect2.top || 
-                          rect1.top > rect2.bottom);
-        if (overlap && dandelion.style.display !== 'none') {
-          dandelion.style.display = 'none';
-          updateScore(+5)
-        }
-      });
-	  
-	   // Check for lily collisions
-      lilies.forEach(lily => {
-        const rect1 = bunny.getBoundingClientRect();
-        const rect2 = lily.getBoundingClientRect();
-        const overlap = !(rect1.right < rect2.left || 
-                          rect1.left > rect2.right || 
-                          rect1.bottom < rect2.top || 
-                          rect1.top > rect2.bottom);
-        if (overlap && lily.style.display !== 'none') {
-          lily.style.display = 'none';
-          updateScore(-10);
-        }
-      });
-	  
-	  if (score >= 20) {
-        gate.style.display = 'block';
-      }
-	  
-	   // Check for gate collision
-        const bunnyRect = bunny.getBoundingClientRect();
-        const gateRect = gate.getBoundingClientRect();
-        const atGate = !(bunnyRect.right < gateRect.left || 
-                   bunnyRect.left > gateRect.right || 
-                   bunnyRect.bottom < gateRect.top || 
-                   bunnyRect.top > gateRect.bottom);
-        if (atGate && gate.style.display === 'block') {
-        // Level up!
-        alert("You have reached the gate! Go through it to enter the next level...");
-        // Need to add a new level here so that the gate takes bunny to a new level
-        // e.g.: window.location.href = "level2.html";
-      }
-    }); 
-	
-	restart.addEventListener('click', () => {
-  // Reset position
-  x = 50;
-  y = 50;
-  bunny.style.left = x + 'px';
-  bunny.style.top = y + 'px';
 
-  // Reset score
-  score = 0;
-  gameOver = false;
-  bunny.style.filter = ''; // Remove grayscale if applied
-  scoreDisplay.textContent = 'Score: 0';
+        // Function to update the score and check whether the gate should be visible
+        function updateScore(amount) {
+            if (gameOver) return;
+            score += amount;
+            scoreDisplay.textContent = 'Score: ' + score;
 
-  // Show all plants again
-  carrots.forEach(carrot => carrot.style.display = 'block');
-  cabbages.forEach(cabbage => cabbage.style.display = 'block');
-  dandelions.forEach(dandelion => dandelion.style.display = 'block');
-  lilies.forEach(lily => lily.style.display = 'block');
+            if (score < 0) {
+                endGame();
+            }
 
-  // Hide gate again
-  gate.style.display = 'none';
-});
+            // Check whether the gate should become visible based on the current level's score boundaries 
+            const currentLevelData = levels[currentLevelIndex];
+            if (currentLevelData && score >= currentLevelData.scoreToUnlockGate) {
+                gate.style.display = 'block';
+            } else {
+                gate.style.display = 'none';
+            }
+        }
+
+        // Function to deal with game over
+        function endGame() {
+            gameOver = true;
+            showMessage('Bunny ate too many poisonous plants! Game Over!');
+            bunny.style.filter = 'grayscale(100%)';
+        }
+
+        // Function to deal with collision detection for two objects
+        function checkCollision(rect1, rect2) {
+            return rect1.left < rect2.right &&
+                   rect1.right > rect2.left &&
+                   rect1.top < rect2.bottom &&
+                   rect1.bottom > rect2.top;
+        }
+
+        // Function to apply mushroom effect (shrink and speed up bunny for a short time)
+        function applyMushroomEffect() {
+            // Clear any existing timer to reset the effect duration
+            if (mushroomEffectTimer) {
+                clearTimeout(mushroomEffectTimer);
+            }
+
+            // Apply shrinking effect (shrink bunny to half size)
+            bunny.style.width = (originalBunnyWidth / 2) + 'px';
+            bunny.style.height = (originalBunnyHeight / 2) + 'px';
+            
+            // Apply speed up effect (bunny moves at double speed)
+            bunnySpeed = originalBunnySpeed * 2;
+
+            // Set a timer to revert the effect after 5 seconds
+            mushroomEffectTimer = setTimeout(revertMushroomEffect, 5000);
+            showMessage("Mushroom power! Bunny has shrunk and gained speed!", 2000);
+        }
+
+        // Function to revert mushroom effect, show message and restore original bunny
+        function revertMushroomEffect() {
+            bunny.style.width = originalBunnyWidth + 'px';
+            bunny.style.height = originalBunnyHeight + 'px';
+            bunnySpeed = originalBunnySpeed;
+            mushroomEffectTimer = null; // Clear the timer ID
+            showMessage("Mushroom effect wore off.", 1500);
+        }
+
+        // Function to load elements for the current level
+        function loadLevel(levelIndex) {
+            // Revert any active mushroom effects when loading a new level
+            revertMushroomEffect();
+
+            // Check if all levels are completed
+            if (levelIndex >= levels.length) {
+                showMessage("Congratulations! You've completed all levels!", 5000);
+                gameOver = true;
+                gate.style.display = 'none'; // Hide gate if all levels are done
+                return;
+            }
+
+            currentLevelIndex = levelIndex;
+            const levelData = levels[currentLevelIndex]; // Get data for the new level
+
+            gameContainer.style.background = levelData.backgroundStyle;
+            gameContainer.style.borderColor = levelData.backgroundStyle === '#ffffff' ? '#add8e6' : 'green'; 
+            
+            // Clear all collectibles for the previous level from the DOM
+            const collectiblesLayer = document.getElementById('collectibles-layer');
+            collectiblesLayer.innerHTML = ''; // Clear all old collectible image elements
+
+            // Reset bunny position to the start point of the new level
+            bunnyX = levelData.bunnyStart.x;
+            bunnyY = levelData.bunnyStart.y;
+            bunny.style.left = bunnyX + 'px';
+            bunny.style.top = bunnyY + 'px';
+            bunny.style.filter = ''; // Ensure bunny is not in grayscale
+
+            // Position the gate for the new level
+            gate.style.left = levelData.gatePosition.x + 'px';
+            gate.style.top = levelData.gatePosition.y + 'px';
+            gate.style.display = 'none'; // Gate starts hidden on new level
+
+            // Create and position the collectibles for the new level
+            // Reset the arrays so that they hold references to the new DOM elements
+            currentCarrots = [];
+            currentCabbages = [];
+            currentDandelions = [];
+            currentLilies = [];
+            currentMushrooms = [];
+
+            // Helper function to create and append a collectible image
+            const createCollectible = (type, src, x, y) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = type;
+                img.classList.add(type); // Add class for styling (e.g., .carrot, .cabbage)
+                img.style.left = x + 'px';
+                img.style.top = y + 'px';
+                collectiblesLayer.appendChild(img); // Add to the collectibles layer
+                return img; // Return the created image element
+            };
+
+            // Populate the collectible arrays by creating images from levelData
+            levelData.collectibles.carrots.forEach(pos => {
+                currentCarrots.push(createCollectible('carrot', 'carrot.png', pos.x, pos.y));
+            });
+            levelData.collectibles.cabbages.forEach(pos => {
+                currentCabbages.push(createCollectible('cabbage', 'cabbage.png', pos.x, pos.y));
+            });
+            levelData.collectibles.dandelions.forEach(pos => {
+                currentDandelions.push(createCollectible('dandelion', 'dandelion.png', pos.x, pos.y));
+            });
+            levelData.collectibles.lilies.forEach(pos => {
+                currentLilies.push(createCollectible('lily', 'lily.png', pos.x, pos.y));
+            });
+            // Add mushrooms to the level
+            if (levelData.collectibles.mushrooms) { // Check if the are any mushrooms in this level
+                levelData.collectibles.mushrooms.forEach(pos => {
+                    currentMushrooms.push(createCollectible('mushroom', 'mushroom.png', pos.x, pos.y));
+                });
+            }
+
+            gameOver = false; // Reset the game over status for the new level
+            updateScore(0); // Call updateScore to re-evaluate whether gate should be visible according to the new level score boundary
+            showMessage(`Starting ${levelData.name}!`); // Show the name and number of the new level
+        }
+
+        // Function to increment the level index and load the next level
+        function nextLevel() {
+            loadLevel(currentLevelIndex + 1);
+        }
+
+        // Function to reset the entire game to the first level
+        function resetGame() {
+            score = 0; // Reset score on full game restart
+            revertMushroomEffect(); // Ensure that the mushroom effect is cleared on game restart
+            loadLevel(0); // Load the first level
+            showMessage("Game restarted!"); // Show information about game restarting
+        }
+
+        // --- Event Listeners ---
+
+        document.addEventListener('keydown', (e) => {
+            if (gameOver) return; // Prevent movement if the game is over
+
+            const keys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
+            if (!keys.includes(e.key)) return;
+
+            let newX = bunnyX;
+            let newY = bunnyY;
+
+            // Calculate the new position based on which key is pressed
+            if (e.key === 'ArrowRight') newX += bunnySpeed;
+            if (e.key === 'ArrowLeft') newX -= bunnySpeed;
+            if (e.key === 'ArrowDown') newY += bunnySpeed;
+            if (e.key === 'ArrowUp') newY -= bunnySpeed;
+
+            // Keep the bunny within the container boundaries
+            newX = Math.max(0, Math.min(gameWidth - bunny.offsetWidth, newX));
+            newY = Math.max(0, Math.min(gameHeight - bunny.offsetHeight, newY));
+
+            // Update the bunny's position on the screen
+            bunnyX = newX;
+            bunnyY = newY;
+            bunny.style.left = bunnyX + 'px';
+            bunny.style.top = bunnyY + 'px';
+
+            // Add hop animation
+            bunny.style.transform = 'translateY(-10px)';
+            setTimeout(() => bunny.style.transform = 'translateY(0)', 100);
+
+            // Get current bounding client rect for the bunny to check for collisions with collectibles
+            const bunnyRect = bunny.getBoundingClientRect();
+
+            // Check collisions for all the collectibles in the current level
+            currentCarrots = currentCarrots.filter(carrot => {
+                if (checkCollision(bunnyRect, carrot.getBoundingClientRect()) && carrot.style.display !== 'none') {
+                    carrot.style.display = 'none';
+                    updateScore(+1);
+                    return false;
+                }
+                return true;
+            });
+            currentCabbages = currentCabbages.filter(cabbage => {
+                if (checkCollision(bunnyRect, cabbage.getBoundingClientRect()) && cabbage.style.display !== 'none') {
+                    cabbage.style.display = 'none';
+                    updateScore(-1);
+                    return false;
+                }
+                return true;
+            });
+            currentDandelions = currentDandelions.filter(dandelion => {
+                if (checkCollision(bunnyRect, dandelion.getBoundingClientRect()) && dandelion.style.display !== 'none') {
+                    dandelion.style.display = 'none';
+                    updateScore(+5);
+                    return false;
+                }
+                return true;
+            });
+            currentLilies = currentLilies.filter(lily => {
+                if (checkCollision(bunnyRect, lily.getBoundingClientRect()) && lily.style.display !== 'none') {
+                    lily.style.display = 'none';
+                    updateScore(-10);
+                    return false;
+                }
+                return true;
+            });
+            currentMushrooms = currentMushrooms.filter(mushroom => {
+                if (checkCollision(bunnyRect, mushroom.getBoundingClientRect()) && mushroom.style.display !== 'none') {
+                    mushroom.style.display = 'none';
+                    updateScore(+2);
+                    applyMushroomEffect(); // Call the new function here!
+                    return false;
+                }
+                return true;
+            });
+
+            // Check for collision with the gate (only if the gate is visible)
+            if (gate.style.display === 'block') {
+                const gateRect = gate.getBoundingClientRect();
+                if (checkCollision(bunnyRect, gateRect)) {
+                    nextLevel();
+                }
+            }
+        });
+
+        // Restart Button event listener
+        restartBtn.addEventListener('click', resetGame);
+
+        // Initialisation of the game
+        // Adjust the game dimensions and bunny position when the window is resized
+        window.addEventListener('resize', () => {
+            gameWidth = gameContainer.offsetWidth;
+            gameHeight = gameContainer.offsetHeight;
+            // Reposition the bunny if it goes out of bounds during the resize (optional)
+            bunnyX = Math.max(0, Math.min(gameWidth - bunny.offsetWidth, bunnyX));
+            bunnyY = Math.max(0, Math.min(gameHeight - bunny.offsetHeight, bunnyY));
+            bunny.style.left = bunnyX + 'px';
+            bunny.style.top = bunnyY + 'px';
+        });
+
+        // Store the original bunny dimensions and speed on initial load
+        bunny.onload = () => { // Ensure image is loaded before getting dimensions
+            originalBunnyWidth = bunny.offsetWidth;
+            originalBunnyHeight = bunny.offsetHeight;
+            originalBunnySpeed = bunnySpeed; // Store initial speed
+            loadLevel(currentLevelIndex); // Start the game by loading the first level
+        };
+
+        // Fallback in case image loads before the loading event
+        if (bunny.complete) {
+            originalBunnyWidth = bunny.offsetWidth;
+            originalBunnyHeight = bunny.offsetHeight;
+            originalBunnySpeed = bunnySpeed;
+            loadLevel(currentLevelIndex);
+        }
