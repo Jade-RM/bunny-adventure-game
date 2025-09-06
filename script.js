@@ -105,7 +105,7 @@
 						{ x: 300, y: 100 }
                     ]
                 },
-                scoreToUnlockGate: 35,
+                scoreToUnlockGate: 40,
                 backgroundStyle: 'repeating-linear-gradient(#b3ecb3, #a3e1a3 10px)' // Default green
             },
             {
@@ -140,7 +140,7 @@
                     ],
                     mushrooms: [] // No mushrooms in level 3
                 },
-                scoreToUnlockGate: 50,
+                scoreToUnlockGate: 60,
 				slippery: true,
                 backgroundStyle: 'repeating-linear-gradient(#ffffff, #fffafa 10px)'
             }
@@ -442,4 +442,5 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
