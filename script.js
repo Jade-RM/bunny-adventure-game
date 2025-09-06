@@ -141,6 +141,7 @@
                     mushrooms: [] // No mushrooms in level 3
                 },
                 scoreToUnlockGate: 50,
+				slippery: true,
                 backgroundStyle: 'repeating-linear-gradient(#ffffff, #fffafa 10px)'
             }
         ];
@@ -296,6 +297,11 @@
             gameOver = false; // Reset the game over status for the new level
             updateScore(0); // Call updateScore to re-evaluate whether gate should be visible according to the new level score boundary
             showMessage(`Starting ${levelData.name}!`); // Show the name and number of the new level
+
+			// Check if the level is slippery and show a warning
+        	if (levelData.slippery) {
+            showMessage("Careful! The snow is slippery!", 4000);
+        	}
         }
 
         // Function to increment the level index and load the next level
@@ -321,6 +327,16 @@
 
             let newX = bunnyX;
             let newY = bunnyY;
+
+			// If the level is slippery, make bunny slide an extra step
+			const currentLevelData = levels[currentLevelIndex];
+				if (currentLevelData.slippery) {
+    			if (e.key === 'ArrowRight') newX += bunnySpeed / 2;
+    			if (e.key === 'ArrowLeft') newX -= bunnySpeed / 2;
+    			if (e.key === 'ArrowDown') newY += bunnySpeed / 2;
+    			if (e.key === 'ArrowUp') newY -= bunnySpeed / 2;
+			}
+
 
             // Calculate the new position based on which key is pressed
             if (e.key === 'ArrowRight') newX += bunnySpeed;
