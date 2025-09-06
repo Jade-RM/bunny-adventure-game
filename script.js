@@ -328,6 +328,12 @@
             let newX = bunnyX;
             let newY = bunnyY;
 
+            // Calculate the new position based on which key is pressed
+            if (e.key === 'ArrowRight') newX += bunnySpeed;
+            if (e.key === 'ArrowLeft') newX -= bunnySpeed;
+            if (e.key === 'ArrowDown') newY += bunnySpeed;
+            if (e.key === 'ArrowUp') newY -= bunnySpeed;
+
 			// If the level is slippery, make bunny slide an extra step
 			const currentLevelData = levels[currentLevelIndex];
 				if (currentLevelData.slippery) {
@@ -336,13 +342,6 @@
     			if (e.key === 'ArrowDown') newY += bunnySpeed / 2;
     			if (e.key === 'ArrowUp') newY -= bunnySpeed / 2;
 			}
-
-
-            // Calculate the new position based on which key is pressed
-            if (e.key === 'ArrowRight') newX += bunnySpeed;
-            if (e.key === 'ArrowLeft') newX -= bunnySpeed;
-            if (e.key === 'ArrowDown') newY += bunnySpeed;
-            if (e.key === 'ArrowUp') newY -= bunnySpeed;
 
             // Keep the bunny within the container boundaries
             newX = Math.max(0, Math.min(gameWidth - bunny.offsetWidth, newX));
@@ -443,3 +442,4 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
