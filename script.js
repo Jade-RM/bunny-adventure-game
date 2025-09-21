@@ -156,28 +156,31 @@
                         { x: 900, y: 300 }, { x: 900, y: 100 }, { x: 500, y: 200 },
                         { x: 300, y: 500 }, { x: 700, y: 200 }, { x: 500, y: 400 },
                         { x: 800, y: 400 }, { x: 600, y: 500 }, { x: 300, y: 600 },
-                        { x: 500, y: 600 }, { x: 900, y: 600 }, { x: 900, y: 500 },
-                        { x: 300, y: 10 }
+                        { x: 300, y: 10 }, { x: 900, y: 600 }, { x: 900, y: 500 }
                     ],
                     cabbages: [
-                        { x: 800, y: 200 }, { x: 500, y: 300 }, { x: 400, y: 100 },
+                        { x: 700, y: 400 }, { x: 500, y: 300 }, { x: 400, y: 100 },
                         { x: 800, y: 300 }, { x: 400, y: 600 }, { x: 300, y: 400 },
-                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 }
+                        { x: 400, y: 10 }, { x: 300, y: 300 }
                     ],
                     dandelions: [
                         { x: 900, y: 10 }, { x: 700, y: 10 }, { x: 400, y: 200 },
                         { x: 800, y: 500 }, { x: 600, y: 300 }, { x: 600, y: 600 },
-                        { x: 500, y: 500 }, { x: 900, y: 400 }
+                        { x: 500, y: 500 }
                     ],
                     lilies: [
                         { x: 900, y: 200 }, { x: 400, y: 400 }, { x: 700, y: 100 },
-                        { x: 500, y: 10 }, { x: 800, y: 600 }, { x: 700, y: 600 }
+                        { x: 500, y: 10 }, { x: 800, y: 600 }
                     ],
                     mushrooms: [
                         { x: 700, y: 300 },
                         { x: 400, y: 500 },
                         { x: 400, y: 300 },
-						{ x: 300, y: 100 }
+						{ x: 300, y: 100 },
+						{ x: 500, y: 600 },
+						{ x: 800, y: 200 },
+						{ x: 900, y: 400 },
+						{ x: 700, y: 600 }
                     ]
                 },
                 scoreToUnlockGate: 80,
@@ -283,6 +286,11 @@
             // Apply speed up effect (bunny moves at double speed)
             bunnySpeed = originalBunnySpeed * 2;
 
+			// Conditionally add the glow effect if on Level 4
+  			if (currentLevelIndex === 3) {
+    		bunny.classList.add('glow');
+  			}
+
             // Set a timer to revert the effect after 5 seconds
             mushroomEffectTimer = setTimeout(revertMushroomEffect, 5000);
             showMessage("Mushroom power! Bunny has shrunk and gained speed!", 2000);
@@ -293,6 +301,11 @@
             bunny.style.width = originalBunnyWidth + 'px';
             bunny.style.height = originalBunnyHeight + 'px';
             bunnySpeed = originalBunnySpeed;
+
+			// Conditionally remove the glow effect
+  			if (currentLevelIndex === 3) {
+   			bunny.classList.remove('glow');
+  			}
             mushroomEffectTimer = null; // Clear the timer ID
             showMessage("Mushroom effect wore off.", 1500);
         }
@@ -365,13 +378,19 @@
             levelData.collectibles.lilies.forEach(pos => {
                 currentLilies.push(createCollectible('lily', 'lily.png', pos.x, pos.y));
             });
-            // Add mushrooms to the level
-            if (levelData.collectibles.mushrooms) { // Check if the are any mushrooms in this level
-                levelData.collectibles.mushrooms.forEach(pos => {
-                    currentMushrooms.push(createCollectible('mushroom', 'mushroom.png', pos.x, pos.y));
-                });
-            }
+			// Add mushrooms to the level
+			if (levelData.collectibles.mushrooms) {
+  				levelData.collectibles.mushrooms.forEach(pos => {
+    				const mushroomImg = createCollectible('mushroom', 'mushroom.png', pos.x, pos.y);
+    				currentMushrooms.push(mushroomImg);
 
+    				// Conditionally add the glow effect for level 4
+    				if (currentLevelIndex === 3) {
+     				 mushroomImg.classList.add('glow');
+    				}
+ 				 });
+			}
+			
             gameOver = false; // Reset the game over status for the new level
             updateScore(0); // Call updateScore to re-evaluate whether gate should be visible according to the new level score boundary
             showMessage(`Starting ${levelData.name}!`); // Show the name and number of the new level
@@ -520,6 +539,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
