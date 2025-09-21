@@ -456,13 +456,17 @@
     		const levelNameMsg = `Starting ${levelData.name}!`;
     		showMessage(levelNameMsg);
 
-    		// If the level is slippery, show the slippery warning after the level name message disappears
+    		// If the level is slippery or windy, show a warning after the level name message disappears
     		if (levelData.slippery) {
         		setTimeout(() => {
             	showMessage("Careful! The snow is slippery!", 4000);
         			}, 3000); // Wait for the level name message duration (default 3000ms)
    			}
-		}
+			if (levelData.windy) {
+				 setTimeout(() => {
+   				 showMessage("The wind is strong here!", 4000);
+					}, 3000); // Wait for the level name message duration (default 3000ms)
+			}
 
         // Event listeners
 
@@ -596,6 +600,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
