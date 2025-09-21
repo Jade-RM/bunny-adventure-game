@@ -1,4 +1,4 @@
-        // DOM Elements
+// DOM Elements
         const gameContainer = document.getElementById('game-container');
         const scoreDisplay = document.getElementById('score');
         const restartBtn = document.getElementById('restart-btn');
@@ -143,6 +143,84 @@
                 scoreToUnlockGate: 60,
 				slippery: true,
                 backgroundStyle: 'repeating-linear-gradient(#ffffff, #fffafa 10px)'
+            }
+			{
+                name: "Level 4: The Midnight Marsh",
+                bunnyStart: { x: 50, y: 600 }, // Start at bottom left
+                gatePosition: { x: 1100, y: 50 }, // Gate at top right
+                collectibles: {
+                    carrots: [
+                        { x: 600, y: 200 }, { x: 800, y: 10 }, { x: 600, y: 100 },
+                        { x: 800, y: 100 }, { x: 600, y: 10 }, { x: 300, y: 200 },
+                        { x: 500, y: 100 }, { x: 700, y: 500 }, { x: 600, y: 400 },
+                        { x: 900, y: 300 }, { x: 900, y: 100 }, { x: 500, y: 200 },
+                        { x: 300, y: 500 }, { x: 700, y: 200 }, { x: 500, y: 400 },
+                        { x: 800, y: 400 }, { x: 600, y: 500 }, { x: 300, y: 600 },
+                        { x: 500, y: 600 }, { x: 900, y: 600 }, { x: 900, y: 500 },
+                        { x: 300, y: 10 }
+                    ],
+                    cabbages: [
+                        { x: 800, y: 200 }, { x: 500, y: 300 }, { x: 400, y: 100 },
+                        { x: 800, y: 300 }, { x: 400, y: 600 }, { x: 300, y: 400 },
+                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 }
+                    ],
+                    dandelions: [
+                        { x: 900, y: 10 }, { x: 700, y: 10 }, { x: 400, y: 200 },
+                        { x: 800, y: 500 }, { x: 600, y: 300 }, { x: 600, y: 600 },
+                        { x: 500, y: 500 }, { x: 900, y: 400 }
+                    ],
+                    lilies: [
+                        { x: 900, y: 200 }, { x: 400, y: 400 }, { x: 700, y: 100 },
+                        { x: 500, y: 10 }, { x: 800, y: 600 }, { x: 700, y: 600 }
+                    ],
+                    mushrooms: [
+                        { x: 700, y: 300 },
+                        { x: 400, y: 500 },
+                        { x: 400, y: 300 },
+						{ x: 300, y: 100 }
+                    ]
+                },
+                scoreToUnlockGate: 80,
+                backgroundStyle: 'linear-gradient(to top, #001a00, #003300, #000033);' // Default green
+            },
+			{
+                name: "Level 5: The Windy Cliffside",
+                bunnyStart: { x: 50, y: 600 }, // Start at bottom left
+                gatePosition: { x: 1100, y: 50 }, // Gate at top right
+                collectibles: {
+                    carrots: [
+                        { x: 600, y: 200 }, { x: 800, y: 10 }, { x: 600, y: 100 },
+                        { x: 800, y: 100 }, { x: 600, y: 10 }, { x: 300, y: 200 },
+                        { x: 500, y: 100 }, { x: 700, y: 500 }, { x: 600, y: 400 },
+                        { x: 900, y: 300 }, { x: 900, y: 100 }, { x: 500, y: 200 },
+                        { x: 300, y: 500 }, { x: 700, y: 200 }, { x: 500, y: 400 },
+                        { x: 800, y: 400 }, { x: 600, y: 500 }, { x: 300, y: 600 },
+                        { x: 500, y: 600 }, { x: 900, y: 600 }, { x: 900, y: 500 },
+                        { x: 300, y: 10 }
+                    ],
+                    cabbages: [
+                        { x: 800, y: 200 }, { x: 500, y: 300 }, { x: 400, y: 100 },
+                        { x: 800, y: 300 }, { x: 400, y: 600 }, { x: 300, y: 400 },
+                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 }
+                    ],
+                    dandelions: [
+                        { x: 900, y: 10 }, { x: 700, y: 10 }, { x: 400, y: 200 },
+                        { x: 800, y: 500 }, { x: 600, y: 300 }, { x: 600, y: 600 },
+                        { x: 500, y: 500 }, { x: 900, y: 400 }
+                    ],
+                    lilies: [
+                        { x: 900, y: 200 }, { x: 400, y: 400 }, { x: 700, y: 100 },
+                        { x: 500, y: 10 }, { x: 800, y: 600 }, { x: 700, y: 600 }
+                    ],
+                    mushrooms: [
+                        { x: 700, y: 300 },
+                        { x: 400, y: 500 },
+                        { x: 400, y: 300 },
+						{ x: 300, y: 100 }
+                    ]
+                },
+                scoreToUnlockGate: 100,
+                backgroundStyle: 'repeating-linear-gradient(#b3ecb3, #a3e1a3 10px)' // Default green
             }
         ];
 
@@ -442,5 +520,4 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
-
 
