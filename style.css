@@ -33,17 +33,24 @@
 
         .firefly {
           position: absolute;
-          width: 5px;
-          height: 5px;
+          width: 12px;
+          height: 12px;
           border-radius: 50%;
-          background: yellow;
-          box-shadow: 0 0 8px yellow;
-          animation: flicker 3s infinite ease-in-out;
+          background: radial-gradient(circle, #ffffaa 70%, #ff0 100%, transparent 100%);
+          box-shadow: 0 0 18px 6px #ffff99, 0 0 40px 10px #ff0;
+          opacity: 0.85;
+          pointer-events: none;
+          animation: firefly-flicker 2s infinite alternate;
+          z-index: 2;
         }
 
-        @keyframes flicker {
-          0%, 100% { opacity: 0.2; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
+        @keyframes firefly-flicker {
+          0%   { opacity: 0.7; transform: scale(1) translateY(0);}
+          20%  { opacity: 0.95; transform: scale(1.1) translateY(-2px);}
+          40%  { opacity: 0.8; transform: scale(0.9) translateY(2px);}
+          60%  { opacity: 1; transform: scale(1.2) translateY(-1px);}
+          80%  { opacity: 0.85; transform: scale(1) translateY(1px);}
+          100% { opacity: 0.7; transform: scale(1) translateY(0);}
         }
         
         #score {
@@ -105,5 +112,6 @@
             box-shadow: 0 0 20px 10px rgb(255, 127, 255);
             }
         }
+
 
 
