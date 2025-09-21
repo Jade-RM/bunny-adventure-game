@@ -185,7 +185,11 @@
 						{ x: 800, y: 200 },
 						{ x: 900, y: 400 },
 						{ x: 700, y: 600 }
-                    ]
+                    ],
+					fireflies: [ { x: 1000, y: 200 }, { x: 200, y: 400 }, { x: 1100, y: 300 }, 
+								{ x: 100: y: 500 }, { x: 1000, y: 600 }, { x: 50, y: 700 }, 
+								{ x: 1200, y: 100 }, { x: 200, y: 800 }, { x: 1100, y: 500 }
+					]
                 },
                 scoreToUnlockGate: 80,
                 backgroundStyle: 'linear-gradient(to top, #225544 0%, #334466 60%, #112233 100%)'
@@ -446,6 +450,17 @@
     				}
  				 });
 			}
+
+			// Add fireflies for visual effect
+			if (levelData.collectibles.fireflies) {
+    			levelData.collectibles.fireflies.forEach(pos => {
+        			const firefly = document.createElement('div');
+        			firefly.classList.add('firefly');
+        			firefly.style.left = pos.x + 'px';
+        			firefly.style.top = pos.y + 'px';
+        			collectiblesLayer.appendChild(firefly);
+    			});
+			 }
 			
             gameOver = false; // Reset the game over status for the new level
             updateScore(0); // Call updateScore to re-evaluate whether gate should be visible according to the new level score boundary
@@ -600,6 +615,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
