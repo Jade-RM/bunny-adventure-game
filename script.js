@@ -467,7 +467,7 @@
    				 showMessage("The wind is strong here!", 4000);
 					}, 3000); // Wait for the level name message duration (default 3000ms)
 			}
-
+		}
         // Event listeners
 
 			document.addEventListener('keydown', (e) => {
@@ -600,6 +600,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
