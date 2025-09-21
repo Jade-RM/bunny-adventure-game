@@ -223,6 +223,7 @@
                     mushrooms: [] // No mushrooms in level 5
                 },
                 scoreToUnlockGate: 100,
+				windy: true, 
                 backgroundStyle: 'repeating-linear-gradient(0deg, #deb887 0px, #deb887 20px, #a9a9a9 20px, #a9a9a9 40px, #d2b48c 40px, #f5deb3 60px)'
             }
         ];
@@ -319,6 +320,9 @@
         function resetGame() {
             score = 0; // Reset score on full game restart
             revertMushroomEffect(); // Ensure that the mushroom effect is cleared on game restart
+			if (windTimer) { // Clear the wind timer on game restart
+   			 clearTimeout(windTimer);
+  			}
             loadLevel(0); // Load the first level
             showMessage("Game restarted!"); // Show information about game restarting
         };
@@ -361,11 +365,22 @@
                 showMessage("Congratulations! You've completed all levels!", 5000);
                 gameOver = true;
                 gate.style.display = 'none'; // Hide gate if all levels are done
+				if (windTimer) {
+      				clearTimeout(windTimer);
+    			}
                 return;
             }
 
             currentLevelIndex = levelIndex;
             const levelData = levels[currentLevelIndex]; // Get the data for the new level
+			// Check if the level is windy and start the wind effect
+  			if (levelData.windy) {
+    			applyWindEffect();
+  			} else if (windTimer) {
+   			 // Clear the wind timer if the next level is not windy
+    			clearTimeout(windTimer);
+    			windForce = 0; // Reset wind force
+  			}
 
             gameContainer.style.background = levelData.backgroundStyle;
             gameContainer.style.borderColor = levelData.backgroundStyle === '#ffffff' ? '#add8e6' : 'green'; 
@@ -451,29 +466,36 @@
 
         // Event listeners
 
-        document.addEventListener('keydown', (e) => {
-            if (gameOver) return; // Prevent movement if the game is over
+			document.addEventListener('keydown', (e) => {
+  			if (gameOver) return;
 
-            const keys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
-            if (!keys.includes(e.key)) return;
+  			const keys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
+  			if (!keys.includes(e.key)) return;
 
-            let newX = bunnyX;
-            let newY = bunnyY;
+  			let newX = bunnyX;
+  			let newY = bunnyY;
 
-            // Calculate the new position based on which key is pressed
-            if (e.key === 'ArrowRight') newX += bunnySpeed;
-            if (e.key === 'ArrowLeft') newX -= bunnySpeed;
-            if (e.key === 'ArrowDown') newY += bunnySpeed;
-            if (e.key === 'ArrowUp') newY -= bunnySpeed;
+  			// Calculate the new position based on which key is pressed
+  			if (e.key === 'ArrowRight') newX += bunnySpeed;
+  			if (e.key === 'ArrowLeft') newX -= bunnySpeed;
+  			if (e.key === 'ArrowDown') newY += bunnySpeed;
+  			if (e.key === 'ArrowUp') newY -= bunnySpeed;
 
-			// If the level is slippery, make the bunny slide an extra step
-			const currentLevelData = levels[currentLevelIndex];
-				if (currentLevelData.slippery) {
-    			if (e.key === 'ArrowRight') newX += bunnySpeed / 2;
-    			if (e.key === 'ArrowLeft') newX -= bunnySpeed / 2;
-    			if (e.key === 'ArrowDown') newY += bunnySpeed / 2;
-    			if (e.key === 'ArrowUp') newY -= bunnySpeed / 2;
-			}
+  			const currentLevelData = levels[currentLevelIndex];
+
+  			// If the level is slippery, make bunny slide
+  			if (currentLevelData.slippery) {
+    		if (e.key === 'ArrowRight') newX += bunnySpeed / 2;
+    		if (e.key === 'ArrowLeft') newX -= bunnySpeed / 2;
+    		if (e.key === 'ArrowDown') newY += bunnySpeed / 2;
+    		if (e.key === 'ArrowUp') newY -= bunnySpeed / 2;
+  			}
+
+  			// Add the wind effect for level 5
+  			if (currentLevelData.windy) {
+   				newX += windDirection.x * windForce;
+    			newY += windDirection.y * windForce;
+  			}
 
             // Keep the bunny within the container boundaries
             newX = Math.max(0, Math.min(gameWidth - bunny.offsetWidth, newX));
@@ -574,6 +596,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
