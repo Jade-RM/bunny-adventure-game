@@ -192,19 +192,20 @@
                 gatePosition: { x: 1100, y: 50 }, // Gate at top right
                 collectibles: {
                     carrots: [
-                        { x: 600, y: 200 }, { x: 800, y: 10 }, { x: 600, y: 100 },
+                        { x: 600, y: 200 }, { x: 800, y: 200 }, { x: 600, y: 100 },
                         { x: 800, y: 100 }, { x: 600, y: 10 }, { x: 300, y: 200 },
-                        { x: 500, y: 100 }, { x: 700, y: 500 }, { x: 600, y: 400 },
+                        { x: 500, y: 100 }, { x: 300, y: 100 }, { x: 600, y: 400 },
                         { x: 900, y: 300 }, { x: 900, y: 100 }, { x: 500, y: 200 },
                         { x: 300, y: 500 }, { x: 700, y: 200 }, { x: 500, y: 400 },
                         { x: 800, y: 400 }, { x: 600, y: 500 }, { x: 300, y: 600 },
                         { x: 500, y: 600 }, { x: 900, y: 600 }, { x: 900, y: 500 },
-                        { x: 300, y: 10 }
+                        { x: 300, y: 10 }, { x: 400, y: 300 }
                     ],
                     cabbages: [
-                        { x: 800, y: 200 }, { x: 500, y: 300 }, { x: 400, y: 100 },
-                        { x: 800, y: 300 }, { x: 400, y: 600 }, { x: 300, y: 400 },
-                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 }
+                        { x: 800, y: 10 }, { x: 500, y: 300 }, { x: 400, y: 100 },
+                        { x: 800, y: 300 }, { x: 700, y: 500 }, { x: 300, y: 400 },
+                        { x: 400, y: 10 }, { x: 300, y: 300 }, { x: 700, y: 400 },
+                        { x: 400, y: 600 }, { x: 400, y: 500 }, { x: 700, y: 300 }
                     ],
                     dandelions: [
                         { x: 900, y: 10 }, { x: 700, y: 10 }, { x: 400, y: 200 },
@@ -215,15 +216,10 @@
                         { x: 900, y: 200 }, { x: 400, y: 400 }, { x: 700, y: 100 },
                         { x: 500, y: 10 }, { x: 800, y: 600 }, { x: 700, y: 600 }
                     ],
-                    mushrooms: [
-                        { x: 700, y: 300 },
-                        { x: 400, y: 500 },
-                        { x: 400, y: 300 },
-						{ x: 300, y: 100 }
-                    ]
+                    mushrooms: [] // No mushrooms in level 5
                 },
                 scoreToUnlockGate: 100,
-                backgroundStyle: 'repeating-linear-gradient(#b3ecb3, #a3e1a3 10px)' // Default green
+                backgroundStyle: 'repeating-linear-gradient(0deg, #8b4513 0px, #8b4513 20px, #a9a9a9 20px, #a9a9a9 40px, #d2b48v 40px, #d2b48c 60px)' // Default green
             }
         ];
 
@@ -539,6 +535,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
