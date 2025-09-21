@@ -7,28 +7,32 @@
         // Initial references (will be updated when the level loads)
         let bunny = document.getElementById('bunny');
         let gate = document.getElementById('gate');
-        // These arrays store DOM elements for the collectibles in the current level
+        // These arrays store the DOM elements for the collectibles in the current level
         let currentCarrots = [];
         let currentCabbages = [];
         let currentDandelions = [];
         let currentLilies = [];
         let currentMushrooms = [];
 
-        // Variables for level index, bunny position and speed and score
+        // Variables for the level index, bunny position, speed and score
         let currentLevelIndex = 0; // Start at the first level (index 0)
         let bunnyX = 50;
         let bunnyY = 50;
         let bunnySpeed = 10; // Changed to 'let' to allow modification
         let score = 0;
         let gameOver = false;
+		let windForce = 0;
+		let windInterval = 0;
+		let windTimer = null;
+		let windDirection = { x: 0, y: 0 };
 
-        // Variables for mushroom effect
+        // Variables for the mushroom effect
         let originalBunnyWidth = 64; // Store original bunny width
         let originalBunnyHeight = 64; // Store original bunny height
         let originalBunnySpeed = 10; // Store original bunny speed
         let mushroomEffectTimer = null; // setTimeout ID
 
-        // Game boundaries within the container
+        // Game boundaries inside the container
         let gameWidth = gameContainer.offsetWidth;
         let gameHeight = gameContainer.offsetHeight;
 
@@ -234,7 +238,7 @@
             }, duration);
         }
 
-        // Function to update the score and check whether the gate should be visible
+        // Function to update the score and check whether the gate should be visible or not
         function updateScore(amount) {
             if (gameOver) return;
             score += amount;
@@ -268,26 +272,26 @@
                    rect1.bottom > rect2.top;
         }
 
-        // Function to apply mushroom effect (shrink and speed up bunny for a short time)
+        // Function to apply the mushroom effect (this shrinks and speeds up bunny for a short time)
         function applyMushroomEffect() {
             // Clear any existing timer to reset the effect duration
             if (mushroomEffectTimer) {
                 clearTimeout(mushroomEffectTimer);
             }
 
-            // Apply shrinking effect (shrink bunny to half size)
+            // Apply the shrinking effect (shrink bunny to half its original size)
             bunny.style.width = (originalBunnyWidth / 2) + 'px';
             bunny.style.height = (originalBunnyHeight / 2) + 'px';
             
-            // Apply speed up effect (bunny moves at double speed)
+            // Apply the speed up effect (bunny moves at double speed)
             bunnySpeed = originalBunnySpeed * 2;
 
-			// Conditionally add the glow effect if on Level 4
+			// Add the glow effect if on Level 4 (bunny eats glowing mushrooms)
   			if (currentLevelIndex === 3) {
     		bunny.classList.add('glow');
   			}
 
-            // Set a timer to revert the effect after 5 seconds
+            // Set a timer to revert the mushroom effect after 5 seconds
             mushroomEffectTimer = setTimeout(revertMushroomEffect, 5000);
             showMessage("Mushroom power! Bunny has shrunk and gained speed!", 2000);
         }
@@ -298,7 +302,7 @@
             bunny.style.height = originalBunnyHeight + 'px';
             bunnySpeed = originalBunnySpeed;
 
-			// Conditionally remove the glow effect
+			// Remove the glow effect if it was applied
   			if (currentLevelIndex === 3) {
    			bunny.classList.remove('glow');
   			}
@@ -306,12 +310,53 @@
             showMessage("Mushroom effect wore off.", 1500);
         }
 
+		// Function to increment the level index and load the next level
+        function nextLevel() {
+            loadLevel(currentLevelIndex + 1);
+        }
+
+        // Function to reset the entire game to the first level
+        function resetGame() {
+            score = 0; // Reset score on full game restart
+            revertMushroomEffect(); // Ensure that the mushroom effect is cleared on game restart
+            loadLevel(0); // Load the first level
+            showMessage("Game restarted!"); // Show information about game restarting
+        };
+
+		// Function to apply wind effect
+		function applyWindEffect() {
+  			if (gameOver) return;
+
+  			const currentLevelData = levels[currentLevelIndex];
+  			if (currentLevelData.windy) {
+    			// Generate a random wind force and direction
+    			windForce = Math.random() * 5 + 1; // Random force between 1 and 6
+    			windDirection = {
+      			x: Math.random() * 2 - 1, // Random value between -1 and 1
+      			y: Math.random() * 2 - 1
+    		};
+
+   	 	// Normalise the vector to ensure a consistent speed regardless of direction
+    	const magnitude = Math.sqrt(windDirection.x * windDirection.x + windDirection.y * windDirection.y);
+    		if (magnitude > 0) {
+      			windDirection.x /= magnitude;
+      			windDirection.y /= magnitude;
+    		}
+
+    	// Set a timer to change the wind effect again after a few seconds
+    		if (windTimer) {
+      			clearTimeout(windTimer);
+    		}
+    		windTimer = setTimeout(applyWindEffect, Math.random() * 3000 + 2000); // New wind effect every 2-5 seconds
+  			}
+		}		
+
         // Function to load elements for the current level
         function loadLevel(levelIndex) {
             // Revert any active mushroom effects when loading a new level
             revertMushroomEffect();
 
-            // Check if all levels are completed
+            // Check whether all levels have been completed
             if (levelIndex >= levels.length) {
                 showMessage("Congratulations! You've completed all levels!", 5000);
                 gameOver = true;
@@ -320,7 +365,7 @@
             }
 
             currentLevelIndex = levelIndex;
-            const levelData = levels[currentLevelIndex]; // Get data for the new level
+            const levelData = levels[currentLevelIndex]; // Get the data for the new level
 
             gameContainer.style.background = levelData.backgroundStyle;
             gameContainer.style.borderColor = levelData.backgroundStyle === '#ffffff' ? '#add8e6' : 'green'; 
@@ -329,7 +374,7 @@
             const collectiblesLayer = document.getElementById('collectibles-layer');
             collectiblesLayer.innerHTML = ''; // Clear all old collectible image elements
 
-            // Reset bunny position to the start point of the new level
+            // Reset the bunny's position to the start point of the new level
             bunnyX = levelData.bunnyStart.x;
             bunnyY = levelData.bunnyStart.y;
             bunny.style.left = bunnyX + 'px';
@@ -374,13 +419,13 @@
             levelData.collectibles.lilies.forEach(pos => {
                 currentLilies.push(createCollectible('lily', 'lily.png', pos.x, pos.y));
             });
-			// Add mushrooms to the level
+			// Add mushrooms to the level if applicable
 			if (levelData.collectibles.mushrooms) {
   				levelData.collectibles.mushrooms.forEach(pos => {
     				const mushroomImg = createCollectible('mushroom', 'mushroom.png', pos.x, pos.y);
     				currentMushrooms.push(mushroomImg);
 
-    				// Conditionally add the glow effect for level 4
+    				// Add the glow effect for mushrooms in level 4
     				if (currentLevelIndex === 3) {
      				 mushroomImg.classList.add('glow');
     				}
@@ -396,7 +441,7 @@
     		const levelNameMsg = `Starting ${levelData.name}!`;
     		showMessage(levelNameMsg);
 
-    		// If the level is slippery, show a warning AFTER the level name message disappears
+    		// If the level is slippery, show the slippery warning after the level name message disappears
     		if (levelData.slippery) {
         		setTimeout(() => {
             	showMessage("Careful! The snow is slippery!", 4000);
@@ -404,20 +449,7 @@
    			}
 		}
 
-        // Function to increment the level index and load the next level
-        function nextLevel() {
-            loadLevel(currentLevelIndex + 1);
-        }
-
-        // Function to reset the entire game to the first level
-        function resetGame() {
-            score = 0; // Reset score on full game restart
-            revertMushroomEffect(); // Ensure that the mushroom effect is cleared on game restart
-            loadLevel(0); // Load the first level
-            showMessage("Game restarted!"); // Show information about game restarting
-        }
-
-        // --- Event Listeners ---
+        // Event listeners
 
         document.addEventListener('keydown', (e) => {
             if (gameOver) return; // Prevent movement if the game is over
@@ -434,7 +466,7 @@
             if (e.key === 'ArrowDown') newY += bunnySpeed;
             if (e.key === 'ArrowUp') newY -= bunnySpeed;
 
-			// If the level is slippery, make bunny slide an extra step
+			// If the level is slippery, make the bunny slide an extra step
 			const currentLevelData = levels[currentLevelIndex];
 				if (currentLevelData.slippery) {
     			if (e.key === 'ArrowRight') newX += bunnySpeed / 2;
@@ -503,7 +535,7 @@
                 return true;
             });
 
-            // Check for collision with the gate (only if the gate is visible)
+            // Check for a collision with the gate (only if the gate is visible)
             if (gate.style.display === 'block') {
                 const gateRect = gate.getBoundingClientRect();
                 if (checkCollision(bunnyRect, gateRect)) {
@@ -542,6 +574,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
