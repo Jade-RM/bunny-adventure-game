@@ -106,7 +106,7 @@
                     ]
                 },
                 scoreToUnlockGate: 40,
-                backgroundStyle: 'repeating-linear-gradient(#b3ecb3, #a3e1a3 10px)' // Default green
+                backgroundStyle: 'repeating-linear-gradient(#b3ecb3, #a3e1a3 10px)'
             },
             {
                 name: "Level 3: The Snowy Mountain",
@@ -219,7 +219,7 @@
                     mushrooms: [] // No mushrooms in level 5
                 },
                 scoreToUnlockGate: 100,
-                backgroundStyle: 'repeating-linear-gradient(0deg, #8b4513 0px, #8b4513 20px, #a9a9a9 20px, #a9a9a9 40px, #d2b48c 40px, #f5deb3 60px)'
+                backgroundStyle: 'repeating-linear-gradient(0deg, #deb887 0px, #deb887 20px, #a9a9a9 20px, #a9a9a9 40px, #d2b48c 40px, #f5deb3 60px)'
             }
         ];
 
@@ -542,6 +542,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
