@@ -181,7 +181,7 @@
                     ]
                 },
                 scoreToUnlockGate: 80,
-                backgroundStyle: 'linear-gradient(to top, #001a00, #003300, #000033);' // Default green
+                backgroundStyle: 'linear-gradient(to top, #001a00, #003300, #000033)' // Default green
             },
 			{
                 name: "Level 5: The Windy Cliffside",
@@ -520,5 +520,6 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
