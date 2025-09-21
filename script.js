@@ -391,11 +391,18 @@
             updateScore(0); // Call updateScore to re-evaluate whether gate should be visible according to the new level score boundary
             showMessage(`Starting ${levelData.name}!`); // Show the name and number of the new level
 
-			// Check if the level is slippery and show a warning
-        	if (levelData.slippery) {
-            showMessage("Careful! The snow is slippery!", 4000);
-        	}
-        }
+			
+			// Show the name and number of the new level, then show warnings if needed
+    		const levelNameMsg = `Starting ${levelData.name}!`;
+    		showMessage(levelNameMsg);
+
+    		// If the level is slippery, show a warning AFTER the level name message disappears
+    		if (levelData.slippery) {
+        		setTimeout(() => {
+            	showMessage("Careful! The snow is slippery!", 4000);
+        			}, 3000); // Wait for the level name message duration (default 3000ms)
+   			}
+		}
 
         // Function to increment the level index and load the next level
         function nextLevel() {
@@ -535,6 +542,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
