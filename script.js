@@ -184,7 +184,7 @@
                     ]
                 },
                 scoreToUnlockGate: 80,
-                backgroundStyle: 'linear-gradient(to top, #001a00, #003300, #000033)' // Default green
+                backgroundStyle: 'linear-gradient(to top, #225544 0%, #334466 60%, #112233 100%)'
             },
 			{
                 name: "Level 5: The Windy Cliffside",
@@ -219,7 +219,7 @@
                     mushrooms: [] // No mushrooms in level 5
                 },
                 scoreToUnlockGate: 100,
-                backgroundStyle: 'repeating-linear-gradient(0deg, #8b4513 0px, #8b4513 20px, #a9a9a9 20px, #a9a9a9 40px, #d2b48v 40px, #d2b48c 60px)' // Default green
+                backgroundStyle: 'repeating-linear-gradient(0deg, #8b4513 0px, #8b4513 20px, #a9a9a9 20px, #a9a9a9 40px, #d2b48c 40px, #f5deb3 60px)'
             }
         ];
 
@@ -542,6 +542,7 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
 
 
