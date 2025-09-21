@@ -143,7 +143,7 @@
                 scoreToUnlockGate: 60,
 				slippery: true,
                 backgroundStyle: 'repeating-linear-gradient(#ffffff, #fffafa 10px)'
-            }
+            },
 			{
                 name: "Level 4: The Midnight Marsh",
                 bunnyStart: { x: 50, y: 600 }, // Start at bottom left
@@ -520,4 +520,5 @@
             originalBunnySpeed = bunnySpeed;
             loadLevel(currentLevelIndex);
         }
+
 
