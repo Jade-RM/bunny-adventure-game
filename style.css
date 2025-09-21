@@ -30,6 +30,21 @@
             width: 32px;
             height: 32px;
         }
+
+        .firefly {
+          position: absolute;
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: yellow;
+          box-shadow: 0 0 8px yellow;
+          animation: flicker 3s infinite ease-in-out;
+        }
+
+        @keyframes flicker {
+          0%, 100% { opacity: 0.2; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
         
         #score {
             position: absolute;
@@ -90,4 +105,5 @@
             box-shadow: 0 0 20px 10px rgb(255, 127, 255);
             }
         }
+
 
